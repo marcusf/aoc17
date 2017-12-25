@@ -1,5 +1,9 @@
-let solve = (s) => (s+s[0]).split('').reduce((o,c,i,a) => 
+let solve1 = (s) => (s+s[0]).split('').reduce((o,c,i,a) => 
 		{ if (c == a[i+1]) o.push(c); return o },[])
+		.map((c) => parseInt(c)).reduce((a,n) => a+n, 0);
+
+let solve2 = (s) => s.split('').reduce((o,c,i,a) => 
+		{ if (c == s[(i+s.length/2)%s.length]) o.push(c); return o },[])
 		.map((c) => parseInt(c)).reduce((a,n) => a+n, 0);
 
 const NUM = "8182759779311661784248926537799313421565672689468495979" +
@@ -41,6 +45,7 @@ const NUM = "8182759779311661784248926537799313421565672689468495979" +
 			"3615765184112344386811718649239168969878367341292953546" +
 			"8496289761635872263372419827855233979462993957484167235" +
 			"5699222747886785616814449297817352118452284785694551841" +
-			"431869545321438468118"
+			"431869545321438468118";
 
-console.log(solve(NUM));
+console.log("1.1:", solve1(NUM));
+console.log("1.2:", solve2(NUM));
