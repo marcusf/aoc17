@@ -38,7 +38,7 @@ const solve = (f) => {
 
 const INPUT = fs.readFileSync("6.txt", "utf8");
 
-console.log("Solve 1", solve1(INPUT));
+console.log("Solve", solve(INPUT));
 
 
 
