@@ -6,8 +6,8 @@ const A = 634, B = 301;
 const MAGIC = 2147483647, MAGIC_A = 16807, MAGIC_B = 48271;
 
 const generate = (factor) => (prev) => (prev * factor) % MAGIC;
-const genA = generate(MAGIC_A)
-const genB = generate(MAGIC_B)
+const genA = generate(MAGIC_A);
+const genB = generate(MAGIC_B);
 
 const solve1 = (a,b) => {
   let pa = a, pb = b, hits = 0;
