@@ -13,6 +13,13 @@ const connect = (map, node, nodes) => {
   }
 }
 
+const makeGraph = (input) => 
+  input.split("\n").reduce((map, line) => {
+    let r = /(\d+) <-> (.+)$/.exec(line);
+    connect(map, r[1], r[2].split(", "));
+    return map;
+  }, new Map);
+
 const findOneGroup = (graph, start) => {
   let visitedNodes = new Set, next = [start];
   do {
@@ -27,13 +34,6 @@ const findOneGroup = (graph, start) => {
   } while (next.length > 0);
   return visitedNodes;
 }
-
-const makeGraph = (input) => 
-  input.split("\n").reduce((map, line) => {
-    let r = /(\d+) <-> (.+)$/.exec(line);
-    connect(map, r[1], r[2].split(", "));
-    return map;
-  }, new Map);
 
 const solve1 = (input) => {
   let graph = makeGraph(input);
