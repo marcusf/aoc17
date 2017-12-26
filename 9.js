@@ -5,20 +5,16 @@ const makeNode = (value, parent) => ({value: value, parent: parent, children: []
 
 const solve = (input) => {
   let {cleaned, removed} = clean(input);
-  let tree    = parse(cleaned);
-  let sum     = sumTree(tree, 0);
+  let tree = parse(cleaned);
+  let sum  = sumTree(tree, 0);
   console.log("The sum is:", sum);
   console.log("Removed garbage:", removed);
 }
 
-const pretty = (tree) => {
-  return '{' + tree.children.map(pretty).join(',') + '}';
-}
+const pretty  = (tree) => '{' + tree.children.map(pretty).join(',') + '}';
+const sumTree = (tree) => tree.value + tree.children.reduce((acc,node) => acc+sumTree(node), 0);
 
-const sumTree = (tree) => {
-  return tree.value + tree.children.reduce((acc,node) => acc+sumTree(node), 0);
-}
-
+/** Not strictly necessary but makes sure it's cleaned appropriately */
 const validate = (curr, next) => {
   if (curr == '{') { return next != ',';
   } else if (curr == '}') { return next == ',' || next == '{' || next == '}'
@@ -35,9 +31,8 @@ const parse = (input) => {
   do {
     let parent = nodeStack[nodeStack.length-1];
     prev = chr;
-    chr =  input[idx++];
+    chr = input[idx++];
     if (!validate(prev, chr)) throw('Error in parsing! ' + prev + ' ::: ' + chr);
-
     if (chr == '{') {
       let node = makeNode(++c, parent);
       parent.children.push(node);
@@ -45,8 +40,6 @@ const parse = (input) => {
     } else if (chr == '}') {
       nodeStack.pop();
       c--;
-    } else if (chr == ',') {
-    } else if (chr == '_') {
     }
   } while (idx < input.length);
   return tree;
