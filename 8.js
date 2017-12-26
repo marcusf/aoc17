@@ -24,6 +24,9 @@ const exec = (loc, regs) => {
   if (loc.comp(regs.get(loc.comp_reg))) {
     regs.set(loc.reg, loc.inc(regs.get(loc.reg)));
   }
+  for ([_, val] of regs) {
+    if (val > regs.get('__max')) regs.set('__max', val);
+  }
   return regs;
 }
 
@@ -34,13 +37,15 @@ const solve = (input) => {
     acc.set(loc.comp_reg, 0);
     return acc;
   }, new Map);
+  regs.set('__max', 0);
   code.reduce((regs,loc) => exec(loc, regs), regs);
   let max = 0;
-  for ([_, val] of regs) {
-    if (val > max) max = val;
+  for ([k, val] of regs) {
+    if (val > max && k != '__max') max = val;
   }
-  return max;
+  return {max: max, total_max: regs.get('__max')};
 }
 
 const INPUT = fs.readFileSync("8.txt", "utf8");
-console.log("Solve: ", solve(INPUT));
+let {max, total_max} = solve(INPUT);
+console.log('max:', max, 'total:', total_max);
