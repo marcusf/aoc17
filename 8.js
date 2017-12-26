@@ -10,7 +10,7 @@ const comp = (op, r) => op == '==' ? (l) => (l == r)
 
 const incr = (op, v) => op == 'inc' ? (l) => (l + v)
                       : op == 'dec' ? (l) => (l - v)
-                      : (l) => { throw('Unknown instruction ' + op )};
+                      : (l) => { throw('Unknown instruction ' + op) };
 
 // liq inc 589 if vv == -2599
 const makeInstr = (string) => {
