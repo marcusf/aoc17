@@ -4,10 +4,11 @@ const INPUT = fs.readFileSync("9.txt", "utf8");
 const makeNode = (value, parent) => ({value: value, parent: parent, children: [] });
 
 const solve = (input) => {
-  let cleaned = clean(input);
+  let {cleaned, removed} = clean(input);
   let tree    = parse(cleaned);
   let sum     = sumTree(tree, 0);
-  console.log(sum);
+  console.log("The sum is:", sum);
+  console.log("Removed garbage:", removed);
 }
 
 const pretty = (tree) => {
@@ -52,7 +53,7 @@ const parse = (input) => {
 }
 
 const clean = (input) => {
-  let idx = 0, garbage = false, output = '';
+  let idx = 0, garbage = false, output = '', counted = 0;
   while (idx < input.length) {
     let chr = input[idx];
     if (garbage) {
@@ -62,6 +63,7 @@ const clean = (input) => {
       } else if (chr == '!') {
         idx += 2;
       } else {
+        counted++;
         idx++;
       }
     } else {
@@ -74,7 +76,7 @@ const clean = (input) => {
       idx++;
     }
   }
-  return output;
+  return {cleaned: output, removed: counted};
 }
 
 solve(INPUT);
