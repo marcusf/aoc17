@@ -34,8 +34,10 @@ let solve = (input) => {
   let y = 0;
   let x = maze[0].reduce((n,c,i) => c == '|' ? i : n, 0);
   let dx = 0, dy = 1;
+  let steps = 0;
   let trail = [];
   while (true) {
+    steps++;
     x += dx;
     y += dy;
     let char = maze[y][x];
@@ -47,7 +49,7 @@ let solve = (input) => {
       break;
     }
   }
-  console.log(trail.join(""));
+  console.log(trail.join(""), "after", steps, "steps");
 }
 
 const INPUT = fs.readFileSync("19.txt", "utf8");
