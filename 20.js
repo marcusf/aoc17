@@ -16,15 +16,33 @@ const updateVec = (vec) => {
 
 const dist = (vec) => Math.abs(vec.p.x) + Math.abs(vec.p.y) + Math.abs(vec.p.z)
 const compare = (a, b) => dist(a)-dist(b);
-const hashVec = (vec) => vec.map((v) => v.id ).join("-")
+const hashVecs = (vec) => vec.map((v) => v.id ).join("-")
+const hashVec = (vec) => vec.p.x + ',' + vec.p.y + ',' + vec.p.z;
 
-const solve = (input) => {
+
+const removeCrashed = (vecs) => {
+  let grouped = vecs.reduce((map, vec) => {
+    let h = hashVec(vec);
+    if (!map.has(h)) {
+      map.set(h,[]);
+    }
+    map.get(h).push(vec.id);
+    return map;
+  }, new Map);
+  return vecs.reduce((arr,vec) => {
+    let h = hashVec(vec);
+    if (grouped.get(h).length == 1) arr.push(vec);
+    return arr;
+  }, []);
+}
+
+const solve1 = (input) => {
   let vecs = input.split("\n").map((line,i) => parse(line,i));
   let hashes = new Set;
   while (true) {
     vecs.map(updateVec);
     vecs = vecs.sort(compare);
-    let hash = hashVec(vecs);
+    let hash = hashVecs(vecs);
     if (hashes.has(hash)) {
       break;
     } else {
@@ -34,6 +52,23 @@ const solve = (input) => {
   console.log(vecs[0].id);
 }
 
+const solve2 = (input) => {
+  let vecs = input.split("\n").map((line,i) => parse(line,i));
+  let hashes = new Set;
+  console.log(vecs.length);
+  while (true) {
+    vecs.map(updateVec);
+    vecs = vecs.sort(compare);
+    vecs = removeCrashed(vecs);
+    let hash = hashVecs(vecs);
+    if (hashes.has(hash)) {
+      break;
+    } else {
+      hashes.add(hash);
+    }
+  }
+  console.log(vecs.length);
+}
 
 const INPUT = fs.readFileSync("20.txt", "utf8");
-solve(INPUT);
+solve2(INPUT);
