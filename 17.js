@@ -17,20 +17,3 @@ const solve1 = (step, ctr) => {
 }
 
 solve1(STEP);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
