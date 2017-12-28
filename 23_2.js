@@ -201,11 +201,12 @@ let outer = 0, inner = 0, incrementAnswer = false, answer = 0;
 let offset = 108100, target = 125100;
 
 
-for (let x = offset; x < target; x+= 17) {
+for (let x = offset; x <= target; x+= 17) {
   incrementAnswer = false;
 
-  //h ökar om det finns två tal, a och b, som bildar X;
-  //dvs om X = a*b
+  // h increments if there exists two numbers >= 2
+  // that equal x, i.e. if x=a*b, which is to say,
+  // iff x is not prime.
 
   for (outer = 2; outer < x; outer++)
 
