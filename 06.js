@@ -1,48 +1,17 @@
 const fs = require('fs');
 
-const key = (array) => array.join("-");
-
-const rebalance = (state) => {
-  let {spread,i} = state.reduce((acc,x,i) => {   
-    if (x > acc.spread) {
-      acc.spread = x;
-      acc.i = i;
-    }
-    return acc }, {spread: 0, i: 0});
+const rebalance = state => {
+  let [spread,i] = state.reduce(([s,i],x,n) => x > s ? [x,n]:[s,i], [0,0]);
   state[i] = 0;
-  while (spread > 0) {
-    i = (i + 1) % (state.length);
-    state[i]++;
-    spread--;
-  }
+  while (spread-- > 0 && ++i) state[i%state.length]++;
   return state;
 }
 
-const solve = (f) => {
-  let state = f.split(" ").map((s) => parseInt(s));
-  let previous = {}, prevList = [], steps = 0;
-  previous[key(state)] = 0;
-  while (true) {
-    steps++;
-    rebalance(state);
-    let h = key(state);
-    if (h in previous) {
-      return {steps: steps, cycle: steps-previous[h]};
-    } else {
-      previous[h] = steps;
-    }
-  }
+const solve = f => {
+  let state = f.split(' ').map(s => +s), seen = {}, steps = 0;
+  seen[state] = 0;
+  while (++steps && !(rebalance(state) in seen)) seen[state] = steps;
+  return {steps: steps, cycle: steps-seen[state]};
 }
 
-
-
-const INPUT = fs.readFileSync("6.txt", "utf8");
-
-console.log("Solve", solve(INPUT));
-
-
-
-
-
-
-
+console.log("Solve", solve(fs.readFileSync("6.txt", "utf8")));

@@ -1,31 +1,25 @@
 const fs = require('fs');
 
-const mkNode = (name, weight, children) => ({name: name, weight: weight, children: children})
+const Node = (name, weight, children) => ({name: name, weight: weight, children: children})
 
-const buildNodeSet = (input) => {
-  const MATCH = /([a-z]+) \((\d+)\)( -> (.+))*/;
-  // Parse all entries
-  return input.split('\n').reduce((acc, line) => {
-    let r = MATCH.exec(line);
-    acc.set(r[1], mkNode(r[1], parseInt(r[2]), r[4] == undefined ? [] : r[4].split(', ')));
-    return acc;
+const buildNodeSet = input => {
+  return input.split('\n').reduce((map, line) => {
+    let r = /([a-z]+) \((\d+)\)( -> (.+))*/.exec(line);
+    return map.set(r[1], Node(r[1], +r[2], !r[4]?[]:r[4].split(', ')));
   }, new Map);
 }
 
-const buildTree = (rootNode, nodeset) => {
-  const build = (child) => {
-    let node = mkNode(child, nodeset.get(child).weight, []);
-    for (child of nodeset.get(child).children) {
-      node.children.push(build(child));
-    }
+const buildTree = (root, nodes) => {
+  const build = child => {
+    let node = Node(child, nodes.get(child).weight, []);
+    nodes.get(child).children.map(gc => node.children.push(build(gc)));
     return node;
   }
-  const addWeight = (node) => {
-    node.totalWeight = node.weight + node.children.reduce((sum,node) => sum+addWeight(node), 0);
-    return node.totalWeight;
-  }
-  let tree = build(rootNode);
-  addWeight(tree);
+  const weight = node => 
+    node.totalWeight = node.weight + node.children.reduce((s,node) => s+weight(node), 0);
+  
+  let tree = build(root);
+  weight(tree);
   return tree;
 }
 
@@ -33,57 +27,33 @@ const findRootNode = (nodeMap) => {
   let reverse = new Map;
   for (let [key, {name, weight, children}] of nodeMap) {
     if (!reverse.has(key)) reverse.set(key, null);
-    children.forEach((child) => { reverse.set(child, name) })
+    children.forEach(child => { reverse.set(child, name) })
   }
-  for ([key,val] of reverse) {
-    if (val == null) return key;
-  }
+  for ([key,val] of reverse) if (!val) return key;
 }
 
-const partitionByWeight = (nodes) => {
-  let partition = new Map, result = { wrong: null, rest: [] };
-  for (node of nodes) {
-    if (!partition.has(node.totalWeight)) {
-      partition.set(node.totalWeight, []);
-    }
-    partition.get(node.totalWeight).push(node);
-  }
-  for ([key,val] of partition) {
-    if (val.length == 1) {
-      result.wrong = val[0];
-    } else {
-      result.rest = val;
-    }
-  }
+const partition = nodes => {
+  let p = new Map, result = { wrong: [], rest: [] };
+  for (node of nodes) p.set(node.totalWeight, [...p.get(node.totalWeight)||[],node]);
+  for ([key,val] of p) result[val.length == 1 ? 'wrong' : 'rest'] = val;
   return result;
 }
 
 const findBadNode = (parent, node) => {
-  let wrong = partitionByWeight(node.children).wrong;
-  if (wrong == null) {
-    let sets = partitionByWeight(parent.children);
+  let wrong = partition(node.children).wrong;
+  if (wrong.length == 0) {
+    let sets = partition(parent.children);
     let rightWeight = sets.rest[0].totalWeight;
-    return { node: node, rightWeight: rightWeight };
+    return node.weight + (rightWeight-node.totalWeight);
   } else {
-    return findBadNode(node, wrong);
+    return findBadNode(node, wrong[0]);
   }
 }
 
-const solve = (input) => {
-  let nodes = buildNodeSet(input);
-  let rootNode = findRootNode(nodes);
-
-  // Solves part #1
-  console.log("Root node is", rootNode);
-  
-  // Solves part #2
-  let tree = buildTree(rootNode, nodes);
-  let {node, rightWeight} = findBadNode(tree, tree);
-
-  console.log(node.name, "has total weight", node.totalWeight, "- It should be", rightWeight);
-  console.log("Set", node.name, "weight to", node.weight + (rightWeight-node.totalWeight),
-    "instead of", node.weight);
+const solve = input => {
+  let nodes = buildNodeSet(input), rootNode = findRootNode(nodes), tree = buildTree(rootNode, nodes);
+  console.log("1: Root node is", rootNode);
+  console.log("2: Rebalance to", findBadNode(tree, tree));
 }
 
-const INPUT = fs.readFileSync("7.txt", "utf8");
-solve(INPUT);
+solve(fs.readFileSync("7.txt", "utf8"));

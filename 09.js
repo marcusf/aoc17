@@ -1,63 +1,58 @@
 const fs = require('fs');
 const INPUT = fs.readFileSync("9.txt", "utf8");
 
-const makeNode = (value, parent) => ({value: value, parent: parent, children: [] });
+const Node = (value, parent=null) => ({value: value, parent: parent, children: [] });
 
-const solve = (input) => {
-  let {cleaned, removed} = clean(input);
+const solve = input => {
+  let [cleaned, removed] = clean(input);
   let tree = parse(cleaned);
   let sum  = sumTree(tree, 0);
-  console.log("The sum is:", sum);
-  console.log("Removed garbage:", removed);
+  console.log("The sum is:", sum, "- Removed garbage:", removed);
 }
 
-const pretty  = (tree) => '{' + tree.children.map(pretty).join(',') + '}';
-const sumTree = (tree) => tree.value + tree.children.reduce((acc,node) => acc+sumTree(node), 0);
+const pretty  = tree => '{' + tree.children.map(pretty).join(',') + '}';
+const sumTree = tree => tree.value + tree.children.reduce((s,node) => s+sumTree(node), 0);
 
 /** Not strictly necessary but makes sure it's cleaned appropriately */
 const validate = (curr, next) => {
-  if (curr == '{') { return next != ',';
-  } else if (curr == '}') { return next == ',' || next == '{' || next == '}'
-  } else if (curr == '_') { return next == ',' || next == '}'
-  } else if (curr == ',') { return next == '_' || next == '{'
-  } else if (curr == '')  { return true
-  } else { return false;
+  switch (curr) {
+    case '{': return next != ','
+    case '}': return next == ',' || next == '{' || next == '}'
+    case '_': return next == ',' || next == '}'
+    case ',': return next == '_' || next == '{'
+    case  '': return true
+    default : return false;
   }
 }
 
-const parse = (input) => {
-  let idx = 1, tree = makeNode(1, null), prev = '', chr = '', nodeStack = [], c = 1;
-  nodeStack.push(tree);
-  do {
-    let parent = nodeStack[nodeStack.length-1];
-    prev = chr;
-    chr = input[idx++];
-    if (!validate(prev, chr)) throw('Error in parsing! ' + prev + ' ::: ' + chr);
+const parse = input => {
+  let tree = Node(1), nodeStack = [tree], chr = '', c = 1;
+  for (let i = 1; i < input.length; i++) {
+    let prev = chr;
+    chr = input[i];
+    if (!validate(prev, chr)) return null;
     if (chr == '{') {
-      let node = makeNode(++c, parent);
+      let parent = nodeStack[nodeStack.length-1];
+      let node = Node(++c, parent);
       parent.children.push(node);
       nodeStack.push(node);
     } else if (chr == '}') {
       nodeStack.pop();
       c--;
     }
-  } while (idx < input.length);
+  } 
   return tree;
 }
 
-const clean = (input) => {
-  let idx = 0, garbage = false, output = '', counted = 0;
+const clean = input => {
+  let idx = 0, garbage = false, output = '', cleaned = 0;
   while (idx < input.length) {
     let chr = input[idx];
     if (garbage) {
-      if (chr == '>') {
-        garbage = false;
-        idx++;
-      } else if (chr == '!') {
-        idx += 2;
-      } else {
-        counted++;
-        idx++;
+      switch(chr) {
+        case '>': garbage = false; idx++; break;
+        case '!': idx += 2; break;
+        default: cleaned++; idx++; break;
       }
     } else {
       if (chr == '<') {
@@ -69,7 +64,7 @@ const clean = (input) => {
       idx++;
     }
   }
-  return {cleaned: output, removed: counted};
+  return [output, cleaned];
 }
 
 solve(INPUT);

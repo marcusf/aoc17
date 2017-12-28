@@ -1,10 +1,10 @@
 const fs = require('fs');
 
-let solve1 = (s) => s.split("\n").map((l) => 
+let solve1 = s => s.split("\n").map(l => 
     l.split(" ").sort().reduce((r,w,i,a) => a[i+1] == w ? 0 : r, 1))
   .reduce((a,b) => a+b, 0);
 
-let solve2 = (s) => s.split("\n").map((l) => 
+let solve2 = s => s.split("\n").map(l => 
   l.split(" ").map((w) => w.split('').sort().join('')).sort().reduce((r,w,i,a) => a[i+1] == w ? 0 : r, 1))
 .reduce((a,b) => a+b, 0);
 
