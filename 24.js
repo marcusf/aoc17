@@ -53,10 +53,7 @@ const solve = (input) => {
   let ml = sp[0].length;
   console.log(Math.max.apply(null, 
     sp.reduce((l,s) => s.length == ml ? l.concat(score(s)) : l, [])));
-
-//  console.log(pretty(path), score(path));
 }
 
 const INPUT = fs.readFileSync("24.txt", "utf8");
-
 solve(INPUT);
