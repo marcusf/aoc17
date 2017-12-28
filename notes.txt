@@ -1,0 +1,44 @@
+; INITIALIZE
+00 ; b = 81
+01 ; c = b
+02 ; if (a != 0) jump 2
+03 ; jump 5
+04 ; b *= 100              <= from 2
+05 ; b += 100000
+06 ; c = b
+07 ; c += 17000
+
+; INITIALIZE
+b = 81
+c = 81
+if (a == 0) {
+  b = (b*100) + 100 000 ; b = 108 100
+  c = b + 17 000        ; c = 125 100
+}
+
+;; MAIN LOOP
+08 ; MAIN     f = 1                 <= from 31
+09 ;          d = 2
+10 ; OUTER    e = 2                 <= from 23
+11 ; INNER    g = d*e - b
+12 ;          
+13 ;          
+14 ;          if (b == 0) f = 0
+15 ;          
+16 ;          e += 1                
+17 ;          g = e - b
+18 ;
+19 ;          if (g != 0) goto INNER
+20 ;          d += 1
+21 ;          g = d - b
+22 ;          
+23 ;          if (g != 0) goto OUTER
+24 ;          if (f == 0) h += 1
+25 ;
+26 ;          g = b - c               
+27 ;          
+28 ;          if (g == 0) TERMINATE
+29 ;          
+30 ;          b += 17            
+31 ;          goto MAIN
+32 ;          END <= from 29

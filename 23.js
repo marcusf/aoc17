@@ -27,7 +27,7 @@ let setupReg = (reg, a) => {
   r.sndc     = 0;
   r.block    = false;
   r.mulc     = 0;
-  r.set('a', a);
+  r.set('a', 1);
   return r;
 }
 
@@ -42,7 +42,11 @@ let solve = (input) => {
 
   reg = setupReg(reg, 0);
   while (reg.ip < instructions.length) {
+    console.log('*', reg.ip, 'a =', reg.get('a'), 'b =',  reg.get('b'), 'c =', reg.get('c'), 
+      'd =', reg.get('d'), 'e =', reg.get('e'), 'f =', reg.get('f'), 
+      'g =', reg.get('g'), 'h =', reg.get('h'));
     instructions[reg.ip](reg);
+    //console.log(reg.ip, reg.get('h'));
   }
   console.log(reg.mulc);
 }
